@@ -16,6 +16,7 @@ A multithreaded, socket-based C++ stock trading platform. This project models re
 - **Pthread:** Multithreading support
 - **Sockets:** TCP/IP Network Communication
 - **CMake:** Build system generator
+- **Valgrind:** Memory leak checker
 
 
 ### Running the Project
@@ -25,14 +26,14 @@ git clone https://github.com/yashkukrecha/stock-trading-platform.git
 cd stock-trading-platform
 ```
 
-Create a ```build``` directory and configure the project
+Create a ```build``` directory and configure the project (Note: the ```-DRUN_VALGRIND``` flag is optional)
 ```
 mkdir build
 cd build
-cmake ..
+cmake -DRUN_VALGRIND=ON ..
 ```
 
-Build the project
+Build the project (Note: if you configured with the optional flag, use ```make valgrind```)
 ```
 make
 ```
