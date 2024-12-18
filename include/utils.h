@@ -5,5 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include <chrono>
+#include <stdbool.h>
 
 #endif // UTILS_H

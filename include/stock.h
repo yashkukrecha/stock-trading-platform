@@ -18,6 +18,7 @@ class Stock {
         void brownian_motion ();
         void print_stock ();
 
+        // GETTERS
         string get_symbol ();
         string get_name ();
         float get_price ();
