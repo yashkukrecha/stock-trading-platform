@@ -16,7 +16,7 @@ class Stock {
         Stock (const string &symbol, const string &name, float initial_price);
 
         void brownian_motion ();
-        void print_stock ();
+        void print_stock () const;
 
         // GETTERS
         string get_symbol ();

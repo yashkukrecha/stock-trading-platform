@@ -20,7 +20,7 @@ void Stock::brownian_motion () {
     price_history.push_back(price);
 }
 
-void Stock::print_stock () {
+void Stock::print_stock () const {
     cout << "Stock: " << name << " (" << symbol << ")\n";
     cout << "Current Price: $" << price << "\n";
     cout << "Price History: ";

@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "chrono": "cpp",
+        "array": "cpp",
+        "string_view": "cpp",
+        "ranges": "cpp",
+        "iostream": "cpp",
+        "functional": "cpp",
+        "random": "cpp",
+        "limits": "cpp",
+        "algorithm": "cpp"
+    }
+}

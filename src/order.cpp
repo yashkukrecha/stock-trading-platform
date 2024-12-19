@@ -30,10 +30,18 @@ bool Order::operator > (const Order& other) const {
     return !(*this < other);
 }
 
-int Order::get_quantity () {
+int Order::get_trader_id () const {
+    return trader_id;
+}
+
+int Order::get_quantity () const {
     return quantity;
 }
 
-OrderType Order::get_order_type () {
+float Order::get_price () const {
+    return price;
+}
+
+OrderType Order::get_order_type () const {
     return order_type;
 }

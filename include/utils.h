@@ -7,5 +7,7 @@
 #include <cstdlib>
 #include <chrono>
 #include <stdbool.h>
+#include <queue>
+#include <utility>
 
 #endif // UTILS_H

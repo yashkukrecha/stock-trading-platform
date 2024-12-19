@@ -10,7 +10,7 @@ protected:
         order = new Order(1, 100, 50.6, OrderType::BUY);
         order2 = new Order(2, 60, 58.2, OrderType::BUY);
         order3 = new Order(3, 45, 49.3, OrderType::SELL);
-        order4 = new Order(3, 90, 62.3, OrderType::SELL);
+        order4 = new Order(4, 90, 62.3, OrderType::SELL);
     }
 
     void TearDown() override {
@@ -28,10 +28,14 @@ protected:
 
 // Test 1: Verify Constructor
 TEST_F(OrderTest, ConstructorInitializesCorrectly) {
+    EXPECT_EQ(order->get_trader_id(), 1);
     EXPECT_EQ(order->get_quantity(), 100);
+    EXPECT_FLOAT_EQ(order->get_price(), 50.6);
     EXPECT_EQ(order->get_order_type(), OrderType::BUY);
 
+    EXPECT_EQ(order3->get_trader_id(), 3);
     EXPECT_EQ(order3->get_quantity(), 45);
+    EXPECT_FLOAT_EQ(order3->get_price(), 49.3);
     EXPECT_EQ(order3->get_order_type(), OrderType::SELL);
 }
 

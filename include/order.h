@@ -26,8 +26,10 @@ class Order {
         bool operator > (const Order& other) const;
 
         // GETTERS
-        int get_quantity ();
-        OrderType get_order_type ();
+        int get_trader_id () const;
+        int get_quantity () const;
+        float get_price () const;
+        OrderType get_order_type () const;
 };
 
 #endif // ORDER_H
