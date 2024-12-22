@@ -33,3 +33,15 @@ TEST_F(MarketTest, AddStock) {
     EXPECT_EQ(size, 1);
     EXPECT_FLOAT_EQ(market_vector[0].first.get_price(), 400.56);
 }
+
+// Test 3: Verify Trader Activities
+TEST_F(MarketTest, AddAndGetTraderInfo) {
+    market->add_trader(1, 1000.0);
+    EXPECT_EQ(market->get_trader_info(1), "Balance: 1000.0\nYour stocks:\n");
+    
+    // Should not overwrite the existing trader
+    market->add_trader(1, 2000.0);
+    EXPECT_EQ(market->get_trader_info(1), "Balance: 1000.0\nYour stocks:\n");
+
+    EXPECT_EQ(market->get_trader_info(2), "No trader found");
+}
