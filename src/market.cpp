@@ -28,10 +28,19 @@ string Market::add_order (int socket_desc, string request) {
             pos = next_pos + 1;
         }
 
+        if (result.size() != 2) {
+            return "Invalid request";
+        }
+
+
         int quantity = stoi(request.substr(pos));
 
         // check if stock exists
-        pair<Stock, OrderBook> p = market[0];
+        if (market.empty()) {
+            return "Stock does not exist";
+        }
+
+        pair<Stock, OrderBook>& p = market[0];
         for (auto stock : market) {
             if (stock.first.get_symbol() == result[1]) {
                 p = stock;
@@ -39,7 +48,7 @@ string Market::add_order (int socket_desc, string request) {
             }
         }
 
-        if (p.first.get_name() != result[1]) {
+        if (p.first.get_symbol() != result[1]) {
             return "Stock does not exist";
         }
 
@@ -54,6 +63,7 @@ string Market::add_order (int socket_desc, string request) {
 
             Order o(socket_desc, quantity, p.first.get_price(), OrderType::BUY);
             p.second.add_order(o, *this);
+            return "Buy order added successfully";
 
         } else if (result[0] == "SELL") {
 
@@ -64,9 +74,10 @@ string Market::add_order (int socket_desc, string request) {
 
             Order o(socket_desc, quantity, p.first.get_price(), OrderType::SELL);
             p.second.add_order(o, *this);
+            return "Sell order added successfully";
 
         } else {
-            "Not a valid request";
+            return "Invalid request";
         }
     }
 
@@ -84,11 +95,11 @@ vector<pair<Stock, OrderBook>> Market::get_market () {
     return market;
 }
 
-Trader Market::get_trader (int socket_desc) {
+Trader& Market::get_trader (int socket_desc) {
     if (traders.find(socket_desc) != traders.end()) {
         return traders[socket_desc];
     }
-    return Trader(-1.0);
+    throw runtime_error("Trader does not exist");
 }
 
 string Market::get_trader_info (int socket_desc) {

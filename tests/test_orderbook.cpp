@@ -51,6 +51,8 @@ TEST_F(OrderBookTest, MatchOrders) {
     const auto& market = m->get_market();
     auto& ob = const_cast<OrderBook&>(market.at(0).second);
 
+    m->add_trader(1, 10000.0);
+
     // Add buy order
     Order buy_order(1, 100, 25.6, OrderType::BUY);
     ob.add_order(buy_order, *m);
@@ -59,7 +61,7 @@ TEST_F(OrderBookTest, MatchOrders) {
     EXPECT_FLOAT_EQ(best_bid_ask.second, 0.0);
 
     // Add sell order that does not match
-    Order sell_order(1, 120, 32.4, OrderType::SELL);
+    Order sell_order(1, 20, 32.4, OrderType::SELL);
     ob.add_order(sell_order, *m);
     best_bid_ask = ob.get_best_bid_ask();
     EXPECT_FLOAT_EQ(best_bid_ask.first, 25.6);
@@ -71,6 +73,7 @@ TEST_F(OrderBookTest, MatchOrders) {
     best_bid_ask = ob.get_best_bid_ask();
     EXPECT_FLOAT_EQ(best_bid_ask.first, 0.0);
     EXPECT_FLOAT_EQ(best_bid_ask.second, 20.0);
+    EXPECT_FLOAT_EQ(m->get_trader(1).get_balance(), 8000.0);
 
     // Add new buy order
     Order new_buy_order(1, 150, 76.4, OrderType::BUY);

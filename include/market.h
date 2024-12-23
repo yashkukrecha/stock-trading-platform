@@ -28,7 +28,7 @@ class Market {
 
         // GETTERS
         vector<pair<Stock, OrderBook>> get_market ();
-        Trader get_trader (int socket_desc);
+        Trader& get_trader (int socket_desc);
         string get_trader_info (int socket_desc);
 };
 
