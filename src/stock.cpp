@@ -30,18 +30,18 @@ void Stock::print_stock () const {
     cout << endl; 
 }
 
-string Stock::get_symbol () {
+string Stock::get_symbol () const {
     return symbol;
 }
 
-string Stock::get_name () {
+string Stock::get_name () const {
     return name;
 }
 
-float Stock::get_price () {
+float Stock::get_price () const {
     return price;
 }
 
-vector<float> Stock::get_price_history () {
+vector<float> Stock::get_price_history () const {
     return price_history;
 }

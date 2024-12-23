@@ -21,12 +21,14 @@ class Market {
 
     public:
         void add_stock (Stock& stock);
-        void print_market () const;
-
         void add_trader (int socket_desc, float initial_balance);
+        string add_order (int socket_desc, string request);
+
+        void print_market () const;
 
         // GETTERS
         vector<pair<Stock, OrderBook>> get_market ();
+        Trader get_trader (int socket_desc);
         string get_trader_info (int socket_desc);
 };
 

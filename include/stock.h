@@ -19,10 +19,10 @@ class Stock {
         void print_stock () const;
 
         // GETTERS
-        string get_symbol ();
-        string get_name ();
-        float get_price ();
-        vector<float> get_price_history ();
+        string get_symbol () const;
+        string get_name () const;
+        float get_price () const;
+        vector<float> get_price_history () const;
 };
 
 #endif // STOCK_H

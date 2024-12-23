@@ -65,6 +65,7 @@ TEST_F(TraderTest, UpdateQuantity) {
     EXPECT_EQ(t->get_quantity("AAPL"), 100);
     EXPECT_EQ(t->get_stocks(), 
           "Balance: 1000.0\nYour stocks:\n"
+          "100 shares of LOL\n"
           "100 shares of AAPL\n"
           "500 shares of TSLA\n");
 
@@ -72,5 +73,6 @@ TEST_F(TraderTest, UpdateQuantity) {
     EXPECT_EQ(t->get_quantity("AAPL"), 0);
     EXPECT_EQ(t->get_stocks(), 
           "Balance: 1000.0\nYour stocks:\n"
+          "100 shares of LOL\n"
           "500 shares of TSLA\n");
 }

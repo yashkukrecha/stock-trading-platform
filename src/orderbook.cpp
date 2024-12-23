@@ -1,4 +1,5 @@
 #include "orderbook.h"
+#include "market.h"
 
 using namespace std;
 
@@ -6,26 +7,35 @@ OrderBook::OrderBook (const string& stock_symbol):
     stock_symbol(stock_symbol)
     {}
 
-void OrderBook::add_order (const Order& order) {
+void OrderBook::add_order (const Order& order, Market& market) {
     if (order.get_order_type() == OrderType::BUY) {
         buy_orders.push(order);
     } else {
         sell_orders.push(order);
     }
-    match_orders();
+    match_orders(market);
 }
 
-void OrderBook::match_orders () {
+void OrderBook::match_orders (Market& market) {
     while (buy_orders.size() > 0 && sell_orders.size() > 0) {
         const Order& top_buy = buy_orders.top();
         const Order& top_sell = sell_orders.top();
 
         // Match the order is greatest buy is larger than smallest sell
         if (top_buy.get_price() >= top_sell.get_price()) {
-            int min_quantity = min(top_buy.get_quantity(), top_sell.get_quantity());
- 
+            int trade_quantity = min(top_buy.get_quantity(), top_sell.get_quantity());
+            float trade_price = top_sell.get_price();
+
+            // Update balances/stock quantities for the traders
+            market.get_trader(top_buy.get_trader_id()).update_balance(-trade_quantity * trade_price);
+            market.get_trader(top_buy.get_trader_id()).update_quantity(stock_symbol, trade_quantity);
+
+            market.get_trader(top_sell.get_trader_id()).update_balance(trade_quantity * trade_price);
+            market.get_trader(top_sell.get_trader_id()).update_quantity(stock_symbol, -trade_quantity);
+
+            // Update the order books
             Order new_buy = top_buy;
-            new_buy.reduce_quantity(min_quantity);
+            new_buy.reduce_quantity(trade_quantity);
             buy_orders.pop();
             // If order was partially filled, add it back to the queue
             if (new_buy.get_quantity() > 0) {
@@ -33,7 +43,7 @@ void OrderBook::match_orders () {
             }
 
             Order new_sell = top_sell;
-            new_sell.reduce_quantity(min_quantity);
+            new_sell.reduce_quantity(trade_quantity);
             sell_orders.pop();
             if (new_sell.get_quantity() > 0) {
                 sell_orders.push(new_sell);

@@ -18,6 +18,8 @@ void Trader::update_quantity (string stock_symbol, int quantity) {
         if (stocks[stock_symbol] == 0) {
             stocks.erase(stock_symbol);
         }
+    } else {
+        add_stock (stock_symbol, quantity);
     }
 }
 

@@ -5,6 +5,7 @@
 #include "order.h"
 
 using namespace std;
+class Market;
 
 class OrderBook {
     private:
@@ -17,8 +18,8 @@ class OrderBook {
     public:
         OrderBook (const string& stock_symbol);
 
-        void add_order (const Order& order);
-        void match_orders ();
+        void add_order (const Order& order, Market& market);
+        void match_orders (Market& market);
         pair<double, double> get_best_bid_ask () const;
         void print_order_book () const;
 };
