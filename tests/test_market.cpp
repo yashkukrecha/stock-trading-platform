@@ -26,12 +26,18 @@ TEST_F(MarketTest, ConstructorInitializesCorrectly) {
 // Test 2: Verify Adding Stocks
 TEST_F(MarketTest, AddStock) {
     Stock s("TSLA", "Tesla Inc.", 400.56);
-    market->add_stock(s);
+    market->add_stock(s, 1000);
 
     auto market_vector = market->get_market();
     int size = market_vector.size();
     EXPECT_EQ(size, 1);
     EXPECT_FLOAT_EQ(market_vector[0].first.get_price(), 400.56);
+
+    const auto& m = market->get_market();
+    auto& ob = const_cast<OrderBook&>(m.at(0).second); 
+    auto best_bid_ask = ob.get_best_bid_ask();
+    EXPECT_FLOAT_EQ(best_bid_ask.first, 0.0);
+    EXPECT_FLOAT_EQ(best_bid_ask.second, 400.56);
 }
 
 // Test 3: Verify Trader Activities
@@ -54,24 +60,31 @@ TEST_F(MarketTest, AddOrder) {
     EXPECT_EQ(market->add_order(1, ""), "Trader does not exist");
     
     market->add_trader(1, 5000.0);
+    market->add_trader(2, 5000.0);
+
     EXPECT_EQ(market->add_order(1, "A"), "Invalid request");
     EXPECT_EQ(market->add_order(1, "BUY:TSLA:100"), "Stock does not exist");
 
     Stock s("TSLA", "Tesla Inc.", 400.0);
-    market->add_stock(s);
+    market->add_stock(s, 2);
 
-    const auto& m = market->get_market();
-    auto& ob = const_cast<OrderBook&>(m.at(0).second); 
-    Order sell_order(2, 100, 300.0, OrderType::SELL);
-    ob.add_order(sell_order, *market);
-
+    // Error checking
     EXPECT_EQ(market->add_order(1, "BUY:TSLA:100"), "Not enough funds for buy request");
     EXPECT_EQ(market->add_order(1, "SELL:TSLA:100"), "Not enough assets for sell request");
     EXPECT_EQ(market->add_order(1, "LOL:TSLA:100"), "Invalid request");
 
+    // Trader 1 buys Tesla stock successfully
     EXPECT_EQ(market->add_order(1, "BUY:TSLA:2"), "Buy order added successfully");
     EXPECT_EQ(market->get_trader(1).get_quantity("TSLA"), 2);
     EXPECT_FLOAT_EQ(market->get_trader(1).get_balance(), 4200.0);
 
+    // Trader 1 sells 1 Tesla stock, Trader 2 wants to buy 2 Tesla stock
     EXPECT_EQ(market->add_order(1, "SELL:TSLA:1"), "Sell order added successfully");
+    EXPECT_EQ(market->add_order(2, "BUY:TSLA:2"), "Buy order added successfully");
+
+    EXPECT_EQ(market->get_trader(1).get_quantity("TSLA"), 1);
+    EXPECT_FLOAT_EQ(market->get_trader(1).get_balance(), 4600.0);
+    EXPECT_EQ(market->get_trader(2).get_quantity("TSLA"), 1);
+    EXPECT_FLOAT_EQ(market->get_trader(2).get_balance(), 4600.0);
+
 }

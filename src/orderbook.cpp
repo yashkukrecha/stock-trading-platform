@@ -30,17 +30,10 @@ void OrderBook::match_orders (Market& market) {
             Trader& tb = market.get_trader(top_buy.get_trader_id());
             tb.update_balance(-trade_quantity * trade_price);
             tb.update_quantity(stock_symbol, trade_quantity);
-
+            
             Trader& ts = market.get_trader(top_sell.get_trader_id());
             ts.update_balance(trade_quantity * trade_price);
             ts.update_quantity(stock_symbol, -trade_quantity);
-
-            cout << "TRADE QUANTITY: " << trade_quantity << ", TRADE_PRICE: " << trade_price << "\n";
-            cout << "TOP BUY TRADER: " << top_buy.get_trader_id() << "\n";
-            cout << "TOP BUY BALANCE: " << tb.get_balance() << "\n";
-            cout << "TOP SELL TRADER: " << top_sell.get_trader_id() << "\n";
-            cout << "TOP SELL BALANCE: " << ts.get_balance() << "\n";
-
 
             // Update the order books
             Order new_buy = top_buy;

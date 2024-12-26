@@ -20,7 +20,7 @@ class Market {
         unordered_map<int, Trader> traders;
 
     public:
-        void add_stock (Stock& stock);
+        void add_stock (Stock& stock, int market_cap);
         void add_trader (int socket_desc, float initial_balance);
         string add_order (int socket_desc, string request);
 

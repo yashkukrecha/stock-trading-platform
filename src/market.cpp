@@ -2,8 +2,14 @@
 
 using namespace std;
 
-void Market::add_stock (Stock& stock) {
+void Market::add_stock (Stock& stock, int market_cap) {
     OrderBook ob(stock.get_symbol());
+
+    // This initial order is what is available on the market
+    Order initial_order(-1, market_cap, stock.get_price(), OrderType::SELL);
+    ob.add_order(initial_order, *this);
+    this->add_trader(-1, 0.0);
+
     market.push_back({stock, ob});
 }
 
