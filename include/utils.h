@@ -12,5 +12,9 @@
 #include <unordered_map>
 #include <sstream>
 #include <iomanip>
+#include "pthread.h"
+#include <mutex>
+#include <csignal>
+#include <unistd.h>
 
 #endif // UTILS_H

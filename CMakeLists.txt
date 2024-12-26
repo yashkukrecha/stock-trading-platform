@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(StockTests)
+project(StockMarket)
 
 # Enable testing support
 enable_testing()
@@ -22,6 +22,12 @@ add_executable(stock_tests ${SRC_FILES} ${TEST_FILES})
 
 # Link Google Test libraries and pthread
 target_link_libraries(stock_tests ${GTEST_LIBRARIES} gtest_main pthread)
+
+# Define the executable for the main program
+add_executable(stock_main ${SRC_FILES} src/main.cpp) # Ensure main.cpp is in /src
+
+# Link pthread to the main executable
+target_link_libraries(stock_main pthread)
 
 # Create custom target for running Valgrind (memory analysis)
 add_custom_target(

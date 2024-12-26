@@ -38,7 +38,6 @@ string Market::add_order (int socket_desc, string request) {
             return "Invalid request";
         }
 
-
         int quantity = stoi(request.substr(pos));
 
         // check if stock exists
@@ -61,32 +60,37 @@ string Market::add_order (int socket_desc, string request) {
         // check the trader
         Trader t = traders[socket_desc];
         if (result[0] == "BUY") {
-
             // trader does not have enough money for the transaction
             if (t.get_balance() < p.first.get_price() * quantity) {
                 return "Not enough funds for buy request";
             }
 
+            // trader has enough for transaction
             Order o(socket_desc, quantity, p.first.get_price(), OrderType::BUY);
             p.second.add_order(o, *this);
-            return "Buy order added successfully";
+            ostringstream oss;
+            oss << "Buy order added successfully: ";
+            oss << quantity << " shares @ " << fixed << setprecision(1) << p.first.get_price();
+            return oss.str();
 
         } else if (result[0] == "SELL") {
-
             // trader does not possess the stocks they wish to sell
             if (t.get_quantity(p.first.get_symbol()) < quantity) {
                 return "Not enough assets for sell request";
             }
-
+            
+            // trader has the stocks they wish to sell
             Order o(socket_desc, quantity, p.first.get_price(), OrderType::SELL);
             p.second.add_order(o, *this);
-            return "Sell order added successfully";
+            ostringstream oss;
+            oss << "Sell order added successfully: ";
+            oss << quantity << " shares @ " << fixed << setprecision(1) << p.first.get_price();
+            return oss.str();
 
         } else {
             return "Invalid request";
         }
     }
-
     return "Trader does not exist";
 }
 

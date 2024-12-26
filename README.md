@@ -13,6 +13,7 @@ A multithreaded, socket-based C++ stock trading platform. This project models re
 ### Tech Stack
 - **C++**
 - **Google Test:** Unit Tests
+- **Mutex:** Thread safety and synchronization
 - **Pthread:** Multithreading support
 - **Sockets:** TCP/IP Network Communication
 - **CMake:** Build system generator
@@ -41,4 +42,9 @@ make
 From the ```build``` directory, run the tests
 ```
 ./stock_tests
+```
+
+From the ```build``` directory, run the main method
+```
+./stock_main
 ```
