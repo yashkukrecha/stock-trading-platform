@@ -20,11 +20,11 @@ A multithreaded, socket-based C++ stock trading platform. This project models re
 - **Valgrind:** Memory leak checker
 
 
-### Running the Project
+### Running the Server
 Clone the repository
 ```
 git clone https://github.com/yashkukrecha/stock-trading-platform.git
-cd stock-trading-platform
+cd stock-trading-platform/server
 ```
 
 Create a ```build``` directory and configure the project (Note: the ```-DRUN_VALGRIND``` flag is optional)
@@ -47,4 +47,17 @@ From the ```build``` directory, run the tests
 From the ```build``` directory, run the main method
 ```
 ./stock_main
+```
+
+### Running the Client
+Navigate to the client directory
+```
+cd stock-trading-platform/client
+```
+
+Create a ```build``` directory and configure the project
+```
+mkdir build
+cd build
+cmake ..
 ```
