@@ -16,5 +16,7 @@
 #include <mutex>
 #include <csignal>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 #endif // UTILS_H

@@ -3,17 +3,23 @@
 using namespace std;
 
 void Market::add_stock (Stock& stock, int market_cap) {
+    market_mutex.lock();
     OrderBook ob(stock.get_symbol());
 
     // This initial order is what is available on the market
     Order initial_order(-1, market_cap, stock.get_price(), OrderType::SELL);
     ob.add_order(initial_order, *this);
+
+    market_mutex.unlock();
     this->add_trader(-1, 0.0);
+    market_mutex.lock();
 
     market.push_back({stock, ob});
+    market_mutex.unlock();
 }
 
 void Market::add_trader (int socket_desc, float initial_balance) {
+    unique_lock<mutex> lock(market_mutex);
     if (traders.find(socket_desc) == traders.end()) {
         Trader t(initial_balance);
         traders[socket_desc] = t;
@@ -21,6 +27,8 @@ void Market::add_trader (int socket_desc, float initial_balance) {
 }
 
 string Market::add_order (int socket_desc, string request) {
+    // Safe mutex which automatically unlocks before return
+    unique_lock<mutex> lock(market_mutex);
     if (traders.find(socket_desc) != traders.end()) {
 
         // split the string
@@ -38,14 +46,19 @@ string Market::add_order (int socket_desc, string request) {
             return "Invalid request";
         }
 
-        int quantity = stoi(request.substr(pos));
+        int quantity;
+        try {
+            quantity = stoi(request.substr(pos));
+        } catch (...) {
+            return "Invalid request";
+        }
 
         // check if stock exists
         if (market.empty()) {
             return "Stock does not exist";
         }
 
-        pair<Stock, OrderBook>& p = market[0];
+        pair<Stock&, OrderBook>& p = market[0];
         for (auto stock : market) {
             if (stock.first.get_symbol() == result[1]) {
                 p = stock;
@@ -65,6 +78,7 @@ string Market::add_order (int socket_desc, string request) {
                 return "Not enough funds for buy request";
             }
 
+            cout << "MADE IT HERE!!\n";
             // trader has enough for transaction
             Order o(socket_desc, quantity, p.first.get_price(), OrderType::BUY);
             p.second.add_order(o, *this);
@@ -94,18 +108,22 @@ string Market::add_order (int socket_desc, string request) {
     return "Trader does not exist";
 }
 
-void Market::print_market () const {
-    cout << "Market: \n";
+void Market::print_market () {
+    unique_lock<mutex> lock(market_mutex);
+    cout << "Market: \n\n";
     for (auto stock : market) {
+        stock.first.print_stock();
         stock.second.print_order_book();
+        cout << "\n";
     }
 }
 
-vector<pair<Stock, OrderBook>> Market::get_market () {
+vector<pair<Stock&, OrderBook>> Market::get_market () {
     return market;
 }
 
 Trader& Market::get_trader (int socket_desc) {
+    // No need for mutex because it is used only inside the add_order method
     if (traders.find(socket_desc) != traders.end()) {
         return traders[socket_desc];
     }
@@ -113,6 +131,7 @@ Trader& Market::get_trader (int socket_desc) {
 }
 
 string Market::get_trader_info (int socket_desc) {
+    unique_lock<mutex> lock(market_mutex);
     if (traders.find(socket_desc) != traders.end()) {
         return traders[socket_desc].get_stocks();
     }

@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Add paths for source and test directories
 include_directories(include)     # Include directory for headers
 file(GLOB SRC_FILES src/*.cpp)   # Find all .cpp files in /src
+list(REMOVE_ITEM SRC_FILES ${CMAKE_SOURCE_DIR}/src/main.cpp) # Exclude main.cpp from SRC_FILES
 file(GLOB TEST_FILES tests/*.cpp) # Find all .cpp files in /tests
 
 # Add Google Test
