@@ -20,8 +20,10 @@ class OrderBook {
 
         void add_order (const Order& order, Market& market);
         void match_orders (Market& market);
-        pair<double, double> get_best_bid_ask () const;
         void print_order_book () const;
+        
+        // GETTERS
+        pair<double, double> get_best_bid_ask () const;
 };
 
 

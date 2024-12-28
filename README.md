@@ -3,7 +3,7 @@
 A multithreaded, socket-based C++ stock trading platform. This project models real-time stock updates, order management, and client-server communication. Designed for extensibility and performance, the system incorporates modern C++ programming practices and testing using Google Test.
 
 ### Features
-- **Stock Management:** Real-time stock price updates and price history tracking.
+- **Stock Management:** Real-time stock price updates and price history tracking using Brownian motion.
 - **Order Management:** Support for buy/sell orders with validation.
 - **Multithreading:** Independent threads simulate real-time stock price updates.
 - **Socket-Based Communication:** Clients connect to the server to place orders and query stocks.
