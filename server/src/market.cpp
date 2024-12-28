@@ -53,38 +53,34 @@ string Market::add_order (int socket_desc, string request) {
             return "Invalid request";
         }
 
-        // check if stock exists
-        if (market.empty()) {
+        // Check if stock exists in the market
+        auto it = find_if(market.begin(), market.end(),
+            [&result](const pair<Stock&, OrderBook>& stock) {
+                return stock.first.get_symbol() == result[1];
+            });
+
+        if (it == market.end()) {
             return "Stock does not exist";
         }
 
-        pair<Stock&, OrderBook>& p = market[0];
-        for (auto stock : market) {
-            if (stock.first.get_symbol() == result[1]) {
-                p = stock;
-                break;
-            }
-        }
-
-        if (p.first.get_symbol() != result[1]) {
-            return "Stock does not exist";
-        }
+        // Safely reference the found stock and its order book
+        pair<Stock&, OrderBook>& p = *it;
 
         // check the trader
         Trader t = traders[socket_desc];
+        float price = p.first.get_price();
         if (result[0] == "BUY") {
             // trader does not have enough money for the transaction
-            if (t.get_balance() < p.first.get_price() * quantity) {
+            if (t.get_balance() < price * quantity) {
                 return "Not enough funds for buy request";
             }
 
-            cout << "MADE IT HERE!!\n";
             // trader has enough for transaction
-            Order o(socket_desc, quantity, p.first.get_price(), OrderType::BUY);
+            Order o(socket_desc, quantity, price, OrderType::BUY);
             p.second.add_order(o, *this);
             ostringstream oss;
             oss << "Buy order added successfully: ";
-            oss << quantity << " shares @ " << fixed << setprecision(1) << p.first.get_price();
+            oss << quantity << " shares @ " << fixed << setprecision(2) << price;
             return oss.str();
 
         } else if (result[0] == "SELL") {
@@ -94,11 +90,11 @@ string Market::add_order (int socket_desc, string request) {
             }
             
             // trader has the stocks they wish to sell
-            Order o(socket_desc, quantity, p.first.get_price(), OrderType::SELL);
+            Order o(socket_desc, quantity, price, OrderType::SELL);
             p.second.add_order(o, *this);
             ostringstream oss;
             oss << "Sell order added successfully: ";
-            oss << quantity << " shares @ " << fixed << setprecision(1) << p.first.get_price();
+            oss << quantity << " shares @ " << fixed << setprecision(2) << price;
             return oss.str();
 
         } else {
@@ -110,7 +106,13 @@ string Market::add_order (int socket_desc, string request) {
 
 void Market::print_market () {
     unique_lock<mutex> lock(market_mutex);
-    cout << "Market: \n\n";
+    cout << "MARKET\n-------------------\nTraders:\n";
+    for (auto trader : traders) {
+        if (trader.first != -1) {
+            cout << trader.first << ".\n" << trader.second.get_stocks() << "\n";
+        }
+    }
+    cout << "-------------------\nStocks:\n";
     for (auto stock : market) {
         stock.first.print_stock();
         stock.second.print_order_book();

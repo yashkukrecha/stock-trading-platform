@@ -18,5 +18,8 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <cstring>
+#include <algorithm>
 
 #endif // UTILS_H

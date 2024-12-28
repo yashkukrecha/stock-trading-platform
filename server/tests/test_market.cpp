@@ -43,12 +43,12 @@ TEST_F(MarketTest, AddStock) {
 // Test 3: Verify Trader Activities
 TEST_F(MarketTest, AddAndGetTraderInfo) {
     market->add_trader(1, 1000.0);
-    EXPECT_EQ(market->get_trader_info(1), "Balance: 1000.0\nYour stocks:\n");
+    EXPECT_EQ(market->get_trader_info(1), "Balance: 1000.00\nYour stocks: N/A\n");
     EXPECT_FLOAT_EQ(market->get_trader(1).get_balance(), 1000.0);
     
     // Should not overwrite the existing trader
     market->add_trader(1, 2000.0);
-    EXPECT_EQ(market->get_trader_info(1), "Balance: 1000.0\nYour stocks:\n");
+    EXPECT_EQ(market->get_trader_info(1), "Balance: 1000.00\nYour stocks: N/A\n");
     EXPECT_FLOAT_EQ(market->get_trader(1).get_balance(), 1000.0);
 
     EXPECT_EQ(market->get_trader_info(2), "No trader found");
@@ -74,22 +74,22 @@ TEST_F(MarketTest, AddOrder) {
     EXPECT_EQ(market->add_order(1, "LOL:TSLA:100"), "Invalid request");
 
     // Trader 1 buys Tesla stock successfully
-    EXPECT_EQ(market->add_order(1, "BUY:TSLA:2"), "Buy order added successfully: 2 shares @ 400.0");
+    EXPECT_EQ(market->add_order(1, "BUY:TSLA:2"), "Buy order added successfully: 2 shares @ 400.00");
     EXPECT_EQ(market->get_trader(1).get_quantity("TSLA"), 2);
     EXPECT_FLOAT_EQ(market->get_trader(1).get_balance(), 4200.0);
 
     // Trader 1 sells 1 Tesla stock, Trader 2 wants to buy 2 Tesla stock
-    EXPECT_EQ(market->add_order(1, "SELL:TSLA:1"), "Sell order added successfully: 1 shares @ 400.0");
-    EXPECT_EQ(market->add_order(2, "BUY:TSLA:2"), "Buy order added successfully: 2 shares @ 400.0");
+    EXPECT_EQ(market->add_order(1, "SELL:TSLA:1"), "Sell order added successfully: 1 shares @ 400.00");
+    EXPECT_EQ(market->add_order(2, "BUY:TSLA:2"), "Buy order added successfully: 2 shares @ 400.00");
 
     EXPECT_EQ(market->get_trader(1).get_quantity("TSLA"), 1);
     EXPECT_FLOAT_EQ(market->get_trader(1).get_balance(), 4600.0);
     EXPECT_EQ(market->get_trader(2).get_quantity("TSLA"), 1);
     EXPECT_FLOAT_EQ(market->get_trader(2).get_balance(), 4600.0);
 
-    EXPECT_EQ(market->get_trader_info(1), "Balance: 4600.0\nYour stocks:\n"
+    EXPECT_EQ(market->get_trader_info(1), "Balance: 4600.00\nYour stocks:\n"
                                           "1 shares of TSLA\n");
-    EXPECT_EQ(market->get_trader_info(2), "Balance: 4600.0\nYour stocks:\n"
+    EXPECT_EQ(market->get_trader_info(2), "Balance: 4600.00\nYour stocks:\n"
                                           "1 shares of TSLA\n");
 
 }

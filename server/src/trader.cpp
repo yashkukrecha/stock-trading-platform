@@ -40,10 +40,16 @@ int Trader::get_quantity (string stock_symbol) {
 
 string Trader::get_stocks () {
     ostringstream oss;
-    oss << "Balance: " << fixed << setprecision(1) << balance << "\n";
-    oss << "Your stocks:\n";
+    oss << "Balance: " << fixed << setprecision(2) << balance << "\n";
+    oss << "Your stocks:";
+    int count = 0;
     for (const auto& [stock_name, quantity] : stocks) {
-        oss << quantity << " shares of " << stock_name << "\n";
+        count++;
+        oss << "\n" << quantity << " shares of " << stock_name;
     }
+    if (count == 0) {
+        oss << " N/A";
+    }
+    oss << "\n";
     return oss.str();
 }

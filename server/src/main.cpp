@@ -3,6 +3,7 @@
 using namespace std;
 
 #define PORT 8000
+#define CONNECTION_LIMIT 100
 
 mutex print_mutex;
 
@@ -23,14 +24,17 @@ void *stock_function (void* args) {
     Stock *stock_ptr = static_cast<Stock*>(args);
     while (true) {
         stock_ptr->brownian_motion();
+        sleep(10);
+    }
+    return nullptr;
+}
 
-        // print the stock safely
+void *market_function (void* args) {
+    Market *market = static_cast<Market*>(args);
+    while (true) {
         print_mutex.lock();
-        stock_ptr->print_stock();
-        cout << "\n";
+        market->print_market();
         print_mutex.unlock();
-
-        // sleep for 10 seconds
         sleep(10);
     }
     return nullptr;
@@ -43,6 +47,27 @@ void *client_function (void* args) {
     delete client_args;
 
     market->add_trader(socket_desc, 10000.0);
+    while (true) {
+        char buffer[1024] = {0};
+        int bytes_read = read(socket_desc, buffer, 1024);
+        if (bytes_read <= 0) {
+            print_mutex.lock();
+            cout << "Client disconnected: " << socket_desc << "\n";
+            print_mutex.unlock();
+            close(socket_desc);
+            break;
+        }
+
+        string request(buffer);
+        if (request == "GET_STOCKS") {
+            string response = market->get_trader_info(socket_desc);
+            send(socket_desc, response.c_str(), response.size(), 0);
+        } else {
+            string response = market->add_order(socket_desc, request);
+            send(socket_desc, response.c_str(), response.size(), 0);
+        }
+    }
+
     return nullptr;
 }
 
@@ -59,25 +84,40 @@ int main () {
     Stock amazon("AMZN", "Amazon.com Inc.", 227.62);
     Stock google("GOOG", "Alphabet Inc. Class C", 197.48);
     Stock microsoft("MSFT", "Microsoft Corp.", 438.94);
+    Stock nvidia("NVDA", "NVIDIA Corp.", 137.09);
+    Stock gamestop("GME", "GameStop Corp.", 32.20);
+    Stock intel("INTC", "Intel Corp.", 20.32);
+    Stock disney("DIS", "Walt Disney Co.", 111.55);
+    Stock paypal("PYPL", "PayPal Holdings Inc.", 86.86);
 
     market.add_stock(apple, 1000);
     market.add_stock(tesla, 1000);
     market.add_stock(amazon, 1000);
     market.add_stock(google, 1000);
     market.add_stock(microsoft, 1000);
+    market.add_stock(nvidia, 1000);
+    market.add_stock(gamestop, 1000);
+    market.add_stock(intel, 1000);
+    market.add_stock(disney, 1000);
+    market.add_stock(paypal, 1000);
 
     // create realtime fluctuations in stock prices using multithreading
-    pthread_t apple_thread, tesla_thread, amazon_thread, google_thread, microsoft_thread;
+    pthread_t apple_thread, tesla_thread, amazon_thread, google_thread, microsoft_thread,
+              nvidia_thread, gamestop_thread, intel_thread, disney_thread, paypal_thread;
     pthread_create(&apple_thread, nullptr, stock_function, &apple);
     pthread_create(&tesla_thread, nullptr, stock_function, &tesla);
     pthread_create(&amazon_thread, nullptr, stock_function, &amazon);
     pthread_create(&google_thread, nullptr, stock_function, &google);
     pthread_create(&microsoft_thread, nullptr, stock_function, &microsoft);
+    pthread_create(&nvidia_thread, nullptr, stock_function, &nvidia);
+    pthread_create(&gamestop_thread, nullptr, stock_function, &gamestop);
+    pthread_create(&intel_thread, nullptr, stock_function, &intel);
+    pthread_create(&disney_thread, nullptr, stock_function, &disney);
+    pthread_create(&paypal_thread, nullptr, stock_function, &paypal);
 
-    // sleep(15);
-    // print_mutex.lock();
-    // market.print_market();
-    // print_mutex.unlock();
+    // create a market thread to print the market regularly
+    pthread_t market_thread;
+    pthread_create(&market_thread, nullptr, market_function, &market);
 
     // set up the socket connection
     int server_fd, new_socket;
@@ -101,7 +141,7 @@ int main () {
     }
 
     // listen for incoming connections
-    if (listen(server_fd, 10) < 0) {
+    if (listen(server_fd, CONNECTION_LIMIT) < 0) {
         perror("Listen failed");
         exit(EXIT_FAILURE);
     }
@@ -145,6 +185,11 @@ int main () {
     pthread_join(amazon_thread, nullptr);
     pthread_join(google_thread, nullptr);
     pthread_join(microsoft_thread, nullptr);
+    pthread_join(nvidia_thread, nullptr);
+    pthread_join(gamestop_thread, nullptr);
+    pthread_join(intel_thread, nullptr);
+    pthread_join(disney_thread, nullptr);
+    pthread_join(paypal_thread, nullptr);
 
     return 0;
 }

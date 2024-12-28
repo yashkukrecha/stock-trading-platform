@@ -55,9 +55,17 @@ Navigate to the client directory
 cd stock-trading-platform/client
 ```
 
-Create a ```build``` directory and configure the project
+Create a ```build``` directory, configure the project, and run the main method
 ```
 mkdir build
 cd build
 cmake ..
+./client
+```
+
+You can now type messages into the terminal and trade your stocks!
+```
+GET_STOCKS
+BUY:SYMBOL:QUANTITY (ex. BUY:AAPL:10)
+SELL:SYMBOL:QUANTITY (ex. SELL:AAPL:10)
 ```
