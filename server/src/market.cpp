@@ -49,6 +49,9 @@ string Market::add_order (int socket_desc, string request) {
         int quantity;
         try {
             quantity = stoi(request.substr(pos));
+            if (quantity == 0) {
+                return "Must order at least 1 stock";
+            }
         } catch (...) {
             return "Invalid request";
         }
@@ -102,6 +105,73 @@ string Market::add_order (int socket_desc, string request) {
         }
     }
     return "Trader does not exist";
+}
+
+string Market::recommend_stocks (string request) {
+    unique_lock<mutex> lock(market_mutex);
+
+    // split the string
+    vector<string> result;
+    result.reserve(2);
+    int pos = 0;
+    int next_pos;
+
+    while ((next_pos = request.find(":", pos)) != string::npos) {
+        result.push_back(request.substr(pos, next_pos - pos));
+        pos = next_pos + 1;
+    }
+
+    if (result.size() != 2 || result[0] != "RECOMMEND") {
+        return "Invalid request";
+    }
+
+    int risk_tolerance;
+    try {
+        risk_tolerance = stoi(result[1]);
+    } catch (...) {
+        return "Invalid request";
+    }
+
+    int num_recommendations;
+    try {
+        num_recommendations = stoi(request.substr(pos));
+        if (num_recommendations == 0) {
+            return "Must request at least 1 stock";
+        }
+    } catch (...) {
+        return "Invalid request";
+    }
+
+    // find the risk for each stock
+    vector<pair<float, string>> scored_stocks;
+    for (auto stock : market) {
+        float std = stock.first.standard_deviation();
+        scored_stocks.emplace_back(std, stock.first.get_symbol());
+    }
+
+    // 3 levels of risk tolerance, 1 is conservative, 3 is aggressive
+    if (risk_tolerance == 1) {
+        sort(scored_stocks.begin(), scored_stocks.end());
+    } else if (risk_tolerance == 2) {
+        sort(scored_stocks.begin(), scored_stocks.end(),
+             [](const pair<float, string>& a, const pair<float, string>& b) {
+                 return fabs(a.first - 0.5) < fabs(b.first - 0.5);
+             });
+    } else if (risk_tolerance == 3) {
+        sort(scored_stocks.rbegin(), scored_stocks.rend());
+    } else {
+        return "Risk tolerance must be a number between 1 and 3";
+    }
+
+    ostringstream oss;
+    oss << "Recommended stocks: ";
+    for (int i = 0; i < scored_stocks.size() && i < num_recommendations; i++) {
+        if (i != 0) {
+            oss << ", ";
+        }
+        oss << scored_stocks[i].second;
+    }
+    return oss.str();
 }
 
 void Market::print_market () {

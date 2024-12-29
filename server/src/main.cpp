@@ -24,7 +24,8 @@ void *stock_function (void* args) {
     Stock *stock_ptr = static_cast<Stock*>(args);
     while (true) {
         stock_ptr->brownian_motion();
-        sleep(10);
+        // sleep for 1-15 seconds before updating the stock price
+        sleep(rand() % 15 + 1);
     }
     return nullptr;
 }
@@ -35,6 +36,7 @@ void *market_function (void* args) {
         print_mutex.lock();
         market->print_market();
         print_mutex.unlock();
+        // sleep for 10 seconds before printing the market again
         sleep(10);
     }
     return nullptr;
@@ -59,13 +61,15 @@ void *client_function (void* args) {
         }
 
         string request(buffer);
+        string response;
         if (request == "GET_STOCKS") {
-            string response = market->get_trader_info(socket_desc);
-            send(socket_desc, response.c_str(), response.size(), 0);
+            response = market->get_trader_info(socket_desc);
+        } else if (request.rfind("RECOMMEND", 0) == 0) {
+            response = market->recommend_stocks(request);
         } else {
-            string response = market->add_order(socket_desc, request);
-            send(socket_desc, response.c_str(), response.size(), 0);
+            response = market->add_order(socket_desc, request);
         }
+        send(socket_desc, response.c_str(), response.size(), 0);
     }
 
     return nullptr;

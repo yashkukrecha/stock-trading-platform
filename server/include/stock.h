@@ -11,12 +11,14 @@ class Stock {
         string name;
         float price;
         vector<float> price_history;
+        mutex stock_mutex;
     
     public:
         Stock (const string &symbol, const string &name, float initial_price);
 
         void brownian_motion ();
-        void print_stock () const;
+        float standard_deviation ();
+        void print_stock ();
 
         // GETTERS
         string get_symbol () const;

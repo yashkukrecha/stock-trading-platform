@@ -6,8 +6,8 @@ A multithreaded, socket-based C++ stock trading platform. This project models re
 - **Stock Management:** Real-time stock price updates and price history tracking using Brownian motion.
 - **Order Management:** Support for buy/sell orders with validation.
 - **Multithreading:** Independent threads simulate real-time stock price updates.
-- **Socket-Based Communication:** Clients connect to the server to place orders and query stocks.
-- **Portfolio Optimization:** Markowitz Mean-Variance optimization algorithm suggests the best stocks.
+- **Socket-Based Communication:** Traders connect to the server to place orders and query stocks.
+- **Portfolio Optimization:** Risk toleration algorithm suggests the best stocks for the trader.
 - **Unit Testing:** Verified using Google Test to ensure correctness and stability.
 
 ### Tech Stack
@@ -41,12 +41,12 @@ make
 
 From the ```build``` directory, run the tests
 ```
-./stock_tests
+./unit_tests
 ```
 
 From the ```build``` directory, run the main method
 ```
-./stock_main
+./server
 ```
 
 ### Running the Client
@@ -60,6 +60,7 @@ Create a ```build``` directory, configure the project, and run the main method
 mkdir build
 cd build
 cmake ..
+make
 ./client
 ```
 
@@ -68,4 +69,5 @@ You can now type messages into the terminal and trade your stocks!
 GET_STOCKS
 BUY:SYMBOL:QUANTITY (ex. BUY:AAPL:10)
 SELL:SYMBOL:QUANTITY (ex. SELL:AAPL:10)
+RECOMMEND:RISK_TOLERANCE:NUMBER_RECOMMENDATIONS (ex. RECOMMEND:1:4)
 ```

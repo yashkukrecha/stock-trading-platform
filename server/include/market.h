@@ -25,6 +25,7 @@ class Market {
         void add_trader (int socket_desc, float initial_balance);
         string add_order (int socket_desc, string request);
 
+        string recommend_stocks (string request);
         void print_market ();
 
         // GETTERS

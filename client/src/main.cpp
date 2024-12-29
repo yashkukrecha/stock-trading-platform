@@ -47,7 +47,6 @@ int main () {
         cin >> request;
 
         send(client_fd, request.c_str(), request.size(), 0);
-        cout << "Message sent: " << request << "\n\n";
 
         char buffer[1024] = {0};
         int bytes_read = read(client_fd, buffer, 1024);

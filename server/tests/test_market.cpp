@@ -62,7 +62,9 @@ TEST_F(MarketTest, AddOrder) {
     market->add_trader(1, 5000.0);
     market->add_trader(2, 5000.0);
 
+    // Error checking
     EXPECT_EQ(market->add_order(1, "A"), "Invalid request");
+    EXPECT_EQ(market->add_order(1, "BUY:TSLA:0"), "Must order at least 1 stock");
     EXPECT_EQ(market->add_order(1, "BUY:TSLA:100"), "Stock does not exist");
 
     Stock s("TSLA", "Tesla Inc.", 400.0);
@@ -92,4 +94,35 @@ TEST_F(MarketTest, AddOrder) {
     EXPECT_EQ(market->get_trader_info(2), "Balance: 4600.00\nYour stocks:\n"
                                           "1 shares of TSLA\n");
 
+}
+
+// Test 5: Verify Recommending Stocks
+TEST_F(MarketTest, RecommendStocks) {
+    Stock s("TSLA", "Tesla Inc.", 400.0);
+    Stock s2("AAPL", "Apple Inc.", 250.0);
+    Stock s3("GOOG", "Google", 200.0);
+    market->add_stock(s, 1000);
+    market->add_stock(s2, 1000);
+    market->add_stock(s3, 1000);
+
+    for (int i = 0; i < 5; i++) {
+        s2.brownian_motion();
+    }
+
+    for (int i = 0; i < 1000; i++) {
+        s3.brownian_motion();
+    }
+
+    // Error checking
+    EXPECT_EQ(market->recommend_stocks("RECOMMEND"), "Invalid request");
+    EXPECT_EQ(market->recommend_stocks("RECOMMEN:10:10"), "Invalid request");
+    EXPECT_EQ(market->recommend_stocks("RECOMMEND:HELLO:10"), "Invalid request");
+    EXPECT_EQ(market->recommend_stocks("RECOMMEND:10:HELLO"), "Invalid request");
+    EXPECT_EQ(market->recommend_stocks("RECOMMEND:10:0"), "Must request at least 1 stock");
+    EXPECT_EQ(market->recommend_stocks("RECOMMEND:0:10"), "Risk tolerance must be a number between 1 and 3");
+
+    // Recommendation of 1 stock at all three levels based on standard deviations
+    EXPECT_EQ(market->recommend_stocks("RECOMMEND:1:1"), "Recommended stocks: TSLA");
+    EXPECT_EQ(market->recommend_stocks("RECOMMEND:2:1"), "Recommended stocks: AAPL");
+    EXPECT_EQ(market->recommend_stocks("RECOMMEND:3:1"), "Recommended stocks: GOOG");
 }

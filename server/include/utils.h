@@ -21,5 +21,7 @@
 #include <arpa/inet.h>
 #include <cstring>
 #include <algorithm>
+#include <numeric>
+#include <cmath>
 
 #endif // UTILS_H

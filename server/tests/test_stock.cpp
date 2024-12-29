@@ -40,7 +40,24 @@ TEST_F(StockTest, BrownianMotion) {
     EXPECT_FLOAT_EQ(stock->get_price_history().back(), new_price);
 }
 
-// Test 3: Prevent Negative Price Updates
+// Test 3: Verify Standard Deviation
+TEST_F(StockTest, StandardDeviation) {
+    float old_price = stock->get_price();
+    stock->brownian_motion();
+    float new_price = stock->get_price();
+
+    float mean = (old_price + new_price) / 2;
+    float variance = 0;
+    variance += ((old_price - mean) * (old_price - mean));
+    variance += ((new_price - mean) * (new_price - mean));
+    variance /= 2;
+    variance = sqrt(variance);
+
+    EXPECT_FLOAT_EQ(stock->standard_deviation(), variance);
+    EXPECT_FLOAT_EQ(stock2->standard_deviation(), 0);
+}
+
+// Test 4: Prevent Negative Price Updates
 TEST_F(StockTest, UpdatePriceRejectsNegativeValues) {
     for (int i = 0; i < 20; i++) {
         stock2->brownian_motion();
