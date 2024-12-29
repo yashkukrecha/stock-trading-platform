@@ -6,13 +6,13 @@
 #include "orderbook.h"
 #include "trader.h"
 
+using namespace std;
+
 enum class TraderAction {
     BUY_ORDER,
     SELL_ORDER,
     GET_STOCKS
 };
-
-using namespace std;
 
 class Market {
     private:

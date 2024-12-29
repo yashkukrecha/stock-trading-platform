@@ -19,7 +19,6 @@ A multithreaded, socket-based C++ stock trading platform. This project models re
 - **CMake:** Build system generator
 - **Valgrind:** Memory leak checker
 
-
 ### Running the Server
 Clone the repository
 ```
